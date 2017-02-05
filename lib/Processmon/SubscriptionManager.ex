@@ -4,24 +4,32 @@ defmodule Processmon.SubscriptionManager do
   ### Client API
 
   @doc """
-  Stars the htop process monitor
+  Starts the SubscriptionManager process
   """
 
-  def start_link(_opts) do
-    GenServer.start_link(__MODULE__, :ok, name: __MODULE__)
+  def start_link(name \\ Processmon.SubscriptionManager) do
+    GenServer.start_link(__MODULE__, :ok, name: name)
   end
 
   @doc """
-  Fetches the monitor output of given server
+    Subscribe to SubscriptionManager process
   """
 
-  def subscribe(subscriber) do
+  def subscribe(subscriber) when is_pid(subscriber) do
     GenServer.cast(__MODULE__, {:subscribe, subscriber})
   end
 
-  def unsubscribe(subscriber) do
+  @doc """
+    Unsubscribe from a SubscriptionManager process
+  """
+
+  def unsubscribe(subscriber) when is_pid(subscriber) do
     GenServer.cast(__MODULE__, {:unsubscribe, subscriber})
   end
+
+  @doc """
+    Share something with subscribers
+  """
 
   def update(payload) do
     GenServer.cast(__MODULE__, {:update, payload})

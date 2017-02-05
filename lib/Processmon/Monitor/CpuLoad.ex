@@ -5,17 +5,10 @@ defmodule Processmon.Monitor.CpuLoad do
 
   alias __MODULE__, as: CpuLoad
 
-  defstruct [cpu: "",
-    usr: "",
-    sys: "",
-    steal: "",
-    soft: "",
-    nice: "",
-    irq: "",
-    iowait: "",
-    guest: "",
-    gnice: "",
-    idle: ""]
+  defstruct [
+      :cpu, :usr,    :sys,    :steal, :soft, :nice, 
+      :irq, :iowait, :guest,  :gnice, :idle 
+    ]
 
     def from_raw(raw) do
       %CpuLoad{

@@ -15,7 +15,7 @@ defmodule Processmon.Monitor do
   ### Client API
 
   @doc """
-  Stars the htop process monitor
+  Stars the monitor process
   """
 
   def start_link(name) do
@@ -30,12 +30,19 @@ defmodule Processmon.Monitor do
     GenServer.call(server, :get_stream)
   end
 
+  @doc """
+  Standard init
+  """
+
   def init(:ok) do
     IO.puts("Starting the monitor process")
     _ref = schedule_next_update()
     {:ok, %Monitor{}}
   end
 
+  @doc """
+  The timer loop
+  """
   def handle_info(:update, _state) do
     %Result{out: memory, status: 0} = Porcelain.shell(@memory_usage_command)
     %Result{out: cpu_usage, status: 0} = Porcelain.shell(@cpu_usage_command)
@@ -51,6 +58,10 @@ defmodule Processmon.Monitor do
     {:noreply, state}
   end
 
+  @doc """
+  Handles the creation of a %Monitor{} struct
+  """
+
   defp update_state(cpu_usage, cpu_users, mem_usage, hostname) do
 
     usage = Poison.decode!(cpu_usage) 
@@ -65,8 +76,16 @@ defmodule Processmon.Monitor do
     }
   end
 
+  @doc """
+    Return the state on :get
+  """
+
   def handle_call(:get, _from, state) do
     {:reply, state, state}
+  end
+
+  def handle_call(_, _from, state) do
+    {:reply, {:error, "Unrecognized instruction" }, state}
   end
 
   defp schedule_next_update() do
