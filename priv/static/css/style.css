@@ -37,6 +37,10 @@ main > div {
   margin: 5px 10px;
 }
 
+.cpu_bar_base {
+  width: 100%;
+}
+
 .cpu_bar {
   display: inline-block;
   height: 20px;
@@ -82,7 +86,7 @@ main > div {
   background-color: #5A647E;
 } 
 
-.cpu_idle, .mem_free {
+.cpu_idle, .mem_free, .cpu_bar_base {
   background-color: rgba(255, 255, 255, 0.4);
 }
 

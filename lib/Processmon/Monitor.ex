@@ -88,7 +88,7 @@ defmodule Processmon.Monitor do
   end
 
   defp schedule_next_update() do
-    Process.send_after(self(), :update, 500)
+    Process.send_after(self(), :update, 0)
   end
 
 end

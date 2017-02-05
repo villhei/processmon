@@ -54,49 +54,50 @@
 
           return m("div", { class: 'cpu_reading' }, [
             m("div", { class: 'cpu_name' }, m("span", reading.cpu + ' (' + loadString + ')')),
-            extractCpuValue(reading, 'usr', 'cpu_bar cpu_usr'),
-            extractCpuValue(reading, 'sys', 'cpu_bar cpu_sys'),
-            extractCpuValue(reading, 'iowait', 'cpu_bar cpu_iowait'),
-            extractCpuValue(reading, 'nice', 'cpu_bar cpu_nice'),
-            extractCpuValue(reading, 'irq', 'cpu_bar cpu_irq'),
-            extractCpuValue(reading, 'steal', 'cpu_bar cpu_steal'),
-            extractCpuValue(reading, 'gnice', 'cpu_bar cpu_gnice'),
-            extractCpuValue(reading, 'soft', 'cpu_bar cpu_soft'),
-            extractCpuValue(reading, 'guest', 'cpu_bar cpu_guest'),
-            extractCpuValue(reading, 'idle', 'cpu_bar cpu_idle')
+            m("div", { class: 'cpu_bar_base' }, [
+              extractCpuValue(reading, 'usr', 'cpu_bar cpu_usr'),
+              extractCpuValue(reading, 'sys', 'cpu_bar cpu_sys'),
+              extractCpuValue(reading, 'iowait', 'cpu_bar cpu_iowait'),
+              extractCpuValue(reading, 'nice', 'cpu_bar cpu_nice'),
+              extractCpuValue(reading, 'irq', 'cpu_bar cpu_irq'),
+              extractCpuValue(reading, 'steal', 'cpu_bar cpu_steal'),
+              extractCpuValue(reading, 'gnice', 'cpu_bar cpu_gnice'),
+              extractCpuValue(reading, 'soft', 'cpu_bar cpu_soft'),
+              extractCpuValue(reading, 'guest', 'cpu_bar cpu_guest')
+            ])
           ])
         }).concat(m("div", { class: 'legend' }, [
-          m('div', { class: 'legend_item' }, [
-            m('div', { class: 'marker cpu_usr' }), m('span', 'User')
-          ]),
-          m('div', { class: 'legend_item' }, [
-            m('div', { class: 'marker cpu_sys' }), m('span', 'System')
-          ]),
-          m('div', { class: 'legend_item' }, [
-            m('div', { class: 'marker cpu_iowait' }), m('span', 'IO Wait')
-          ]),
-          m('div', { class: 'legend_item' }, [
-            m('div', { class: 'marker cpu_nice' }), m('span', 'Nice')
-          ]),
-          m('div', { class: 'legend_item' }, [
-            m('div', { class: 'marker cpu_irq' }), m('span', 'IRQ')
-          ]),
-          m('div', { class: 'legend_item' }, [
-            m('div', { class: 'marker cpu_steal' }), m('span', 'Steal')
-          ]),
-          m('div', { class: 'legend_item' }, [
-            m('div', { class: 'marker cpu_gnice' }), m('span', 'Gnice')
-          ]),
-          m('div', { class: 'legend_item' }, [
-            m('div', { class: 'marker cpu_soft' }), m('span', 'Soft')
-          ]),
-          m('div', { class: 'legend_item' }, [
-            m('div', { class: 'marker cpu_guest' }), m('span', 'Guest')
-          ]),
-          m('div', { class: 'legend_item' }, [
-            m('div', { class: 'marker cpu_idle' }), m('span', 'Idle')
-          ])
-        ])))
+      m('div', { class: 'legend_item' }, [
+        m('div', { class: 'marker cpu_usr' }), m('span', 'User')
+      ]),
+      m('div', { class: 'legend_item' }, [
+        m('div', { class: 'marker cpu_sys' }), m('span', 'System')
+      ]),
+      m('div', { class: 'legend_item' }, [
+        m('div', { class: 'marker cpu_iowait' }), m('span', 'IO Wait')
+      ]),
+      m('div', { class: 'legend_item' }, [
+        m('div', { class: 'marker cpu_nice' }), m('span', 'Nice')
+      ]),
+      m('div', { class: 'legend_item' }, [
+        m('div', { class: 'marker cpu_irq' }), m('span', 'IRQ')
+      ]),
+      m('div', { class: 'legend_item' }, [
+        m('div', { class: 'marker cpu_steal' }), m('span', 'Steal')
+      ]),
+      m('div', { class: 'legend_item' }, [
+        m('div', { class: 'marker cpu_gnice' }), m('span', 'Gnice')
+      ]),
+      m('div', { class: 'legend_item' }, [
+        m('div', { class: 'marker cpu_soft' }), m('span', 'Soft')
+      ]),
+      m('div', { class: 'legend_item' }, [
+        m('div', { class: 'marker cpu_guest' }), m('span', 'Guest')
+      ]),
+      m('div', { class: 'legend_item' }, [
+        m('div', { class: 'marker cpu_idle' }), m('span', 'Idle')
+      ])
+    ])))
       }
     }
 
