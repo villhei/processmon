@@ -38,7 +38,7 @@ defmodule Processmon.SubscriptionManager do
   ### Callbacks
 
   def init(:ok) do
-    IO.puts("Starting the subscription manager process")
+    IO.puts("Starting the SubscriptionManager process")
     {:ok, %{}}
   end
 

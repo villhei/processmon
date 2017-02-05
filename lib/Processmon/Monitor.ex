@@ -1,7 +1,7 @@
 defmodule Processmon.Monitor do
   use GenServer
 
-  defstruct cpu_usage: [], cpu_users: [], mem_usage: [], hostname: "localhost"
+  defstruct cpu_usage: [], cpu_users: [], mem_usage: [], uptime: "", hostname: "localhost"
 
   alias Porcelain.Result
   alias Processmon.SubscriptionManager
@@ -12,6 +12,7 @@ defmodule Processmon.Monitor do
   @cpu_users_command "scripts/cpu_users.sh" # "ps -eo pcpu,pid,user,args | sort -k 1 -r | head -10"
   @memory_usage_command "scripts/mem.sh" #"free"
   @hostname_command "hostname"
+  @uptime_command "uptime"
   ### Client API
 
   @doc """
@@ -35,7 +36,7 @@ defmodule Processmon.Monitor do
   """
 
   def init(:ok) do
-    IO.puts("Starting the monitor process")
+    IO.puts("Starting the system monitor process")
     _ref = schedule_next_update()
     {:ok, %Monitor{}}
   end
@@ -48,21 +49,18 @@ defmodule Processmon.Monitor do
     %Result{out: cpu_usage, status: 0} = Porcelain.shell(@cpu_usage_command)
     %Result{out: cpu_users, status: 0} = Porcelain.shell(@cpu_users_command)
     %Result{out: hostname, status: 0} = Porcelain.shell(@hostname_command)
+    %Result{out: uptime, status: 0} = Porcelain.shell(@uptime_command)
 
     _ref = schedule_next_update()
 
-    state = update_state(cpu_usage, cpu_users, memory, hostname)
+    state = update_state(cpu_usage, cpu_users, memory, hostname, uptime)
 
     SubscriptionManager.update(state)
 
     {:noreply, state}
   end
 
-  @doc """
-  Handles the creation of a %Monitor{} struct
-  """
-
-  defp update_state(cpu_usage, cpu_users, mem_usage, hostname) do
+  defp update_state(cpu_usage, cpu_users, mem_usage, hostname, uptime) do
 
     usage = Poison.decode!(cpu_usage) 
       |> Enum.map(&CpuLoad.from_raw(&1))
@@ -72,7 +70,8 @@ defmodule Processmon.Monitor do
       cpu_usage: usage,
       cpu_users: Poison.decode!(cpu_users),
       mem_usage: Poison.decode!(mem_usage),
-      hostname: hostname
+      hostname: hostname,
+      uptime: uptime
     }
   end
 

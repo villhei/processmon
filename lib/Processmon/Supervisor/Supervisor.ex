@@ -8,7 +8,8 @@ defmodule Processmon.Supervisor do
   def init(:ok) do
     children = [
       worker(Processmon.Monitor, [Processmon.Monitor]),
-      worker(Processmon.SubscriptionManager, [Processmon.SubscriptionManager])
+      worker(Processmon.SubscriptionManager, [Processmon.SubscriptionManager]),
+      worker(Processmon.HTTP, [Processmon.HTTP])
     ]
     supervise(children, strategy: :one_for_one)
   end
