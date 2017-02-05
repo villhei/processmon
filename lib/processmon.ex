@@ -6,7 +6,7 @@ defmodule Processmon do
     dispatch = :cowboy_router.compile([
       {:_, [
         {"/", :cowboy_static, {:priv_file, :processmon, "index.html"}},
-        {"/static/[...]", :cowboy_static, {:priv_dir,  :cowboy_elixir_example, "static_files"}},
+        {"/static/[...]", :cowboy_static, {:priv_dir,  :processmon, "static"}},
         {"/websocket", WebsocketHandler, []}
       ]}
     ])

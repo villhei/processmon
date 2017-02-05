@@ -1,0 +1,162 @@
+body {
+  font-family: 'Inconsolata';
+  background-color: #454545;
+  color: #e6e1dc;
+}
+
+body * {
+  box-sizing: border-box;
+}
+
+main {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+main > h3 {
+  text-align: center;
+  flex-basis: 90%;
+  width: 90%;
+}
+
+main > div {
+    flex-basis: 90%;
+    overflow: hidden;
+}
+
+.cpu_usage, .cpu_users, .memory, main > h3 {
+  border: 1px solid black;
+  background-color: #2B2B2B;
+  margin: 2pt 0;
+}
+
+.cpu_reading, .memory_reading, .cpu_users {
+  width: calc(50% - 20px);
+  display: inline-block;
+  margin: 5px 10px;
+}
+
+.cpu_bar {
+  display: inline-block;
+  height: 20px;
+}
+
+.cpu_bar > * {
+  display: none;
+}
+
+.cpu_usr {
+  background-color: #A5C261;
+}
+
+.cpu_sys {
+  background-color: #FFC66D;
+}
+
+.cpu_iowait {
+  background-color: #DA4939;
+}
+
+.cpu_nice {
+  background-color: #B6B3EB;
+}
+
+.cpu_irq {
+  background-color: #F9F7F3;
+}
+
+.cpu_steal {
+  background-color: #2B2B2B;
+}
+
+.cpu_gnice {
+  background-color: #519F50;
+}
+
+.cpu_soft {
+  background-color: #6D9CBE;
+}
+
+.cpu_guest {
+  background-color: #5A647E;
+} 
+
+.cpu_idle, .mem_free {
+  background-color: rgba(255, 255, 255, 0.4);
+}
+
+.cpu_name:before {
+  content: 'CPU: '
+}
+
+/* 
+  make each pie piece a rectangle twice as high as it is wide.
+  move the transform origin to the middle of the left side.
+  Also ensure that overflow is set to hidden.
+*/     
+
+.mem_used > *, .mem_free > *, .mem_cached > *, .mem_shared > * {
+  display: none;
+}
+.mem_used, .mem_free, .mem_cached, .mem_shared  {
+  display: inline-block;
+  height: 20px;
+}
+
+.mem_used {
+  background-color: #DA4939;
+}
+
+.mem_cached {
+  background-color: #FFC66D;
+}
+
+.mem_shared {
+  background-color: #A5C261;
+}
+
+.process_table {
+  display: inline-block;
+  width: 100%;
+  margin: 5px 10px;
+  border-collapse: collapse;
+}
+
+.process_table th {
+  text-align: left;
+  background-color: #454545;
+  border: 1px solid black;
+  border-bottom: 2px solid black;
+}
+
+.process_table th, .process_table td  {
+  margin: 0;
+  padding: 2px 4px;
+}
+
+.process_table td {
+  max-width: 25%;
+  min-width: 60px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  border-left: 1px solid black;
+  border-right: 1px solid black;
+}
+
+.process_table tr:nth-child(even) {
+  background-color: rgba(255, 255, 255, 0.1);  
+}
+
+.legend_item {
+  display: inline-block;
+  margin: 5px;
+}
+
+.legend_item .marker {
+  width: 10px;
+  height: 10px;
+  border: 1px solid black;
+  margin-right: 5px;
+  display: inline-block;
+}

@@ -1,19 +1,35 @@
+<html>
+
+<head>
+  <link href="https://fonts.googleapis.com/css?family=Inconsolata" rel="stylesheet">
+  <link rel="stylesheet" type="text/css" href="static/css/style.css">
+  <title>Machine monitor</title>
+</head>
+
 <body>
   <script src="http://unpkg.com/mithril/mithril.js"></script>
   <script>
 
     var root = document.body
-    const socket = new WebSocket('ws://localhost:8080/websocket')
-
+    const socket = new WebSocket('ws://' + location.hostname + ':' + location.port + '/websocket')
 
     const MonitorData = {
-      data: {
-        hostname: 'connecting...'
-      },
+      cpu_usage: [],
+      cpu_users: [],
+      mem_usage: [],
+      hostname: 'connecting...',
       receive: function () {
         socket.onmessage = function (msg) {
           const json = JSON.parse(msg.data)
-          MonitorData.data = json
+          MonitorData.cpu_usage = json.cpu_usage
+          MonitorData.mem_usage = json.mem_usage
+          MonitorData.hostname = json.hostname
+          const users = [].concat(json.cpu_users)
+          users.sort(function (a, b) {
+            return parseFloat(a["%CPU"]) - parseFloat(b["%CPU"])
+          })
+          users.reverse()
+          MonitorData.cpu_users = users
           m.redraw()
         }
       },
@@ -25,15 +41,159 @@
       }
     }
 
+    function extractCpuValue(cpuReading, valueName, className) {
+      const value = parseFloat(cpuReading[valueName])
+      const width = Math.floor(value) + '%'
+      return m("div", { class: className, style: { width: width } }, m("span", value))
+    }
+
+    const CpuUsage = {
+      view: function () {
+        return m("div", { class: 'cpu_usage' }, MonitorData.cpu_usage.map(function (reading) {
+          const loadString = 100 - parseInt(reading.idle) + '%'
+
+          return m("div", { class: 'cpu_reading' }, [
+            m("div", { class: 'cpu_name' }, m("span", reading.cpu + ' (' + loadString + ')')),
+            extractCpuValue(reading, 'usr', 'cpu_bar cpu_usr'),
+            extractCpuValue(reading, 'sys', 'cpu_bar cpu_sys'),
+            extractCpuValue(reading, 'iowait', 'cpu_bar cpu_iowait'),
+            extractCpuValue(reading, 'nice', 'cpu_bar cpu_nice'),
+            extractCpuValue(reading, 'irq', 'cpu_bar cpu_irq'),
+            extractCpuValue(reading, 'steal', 'cpu_bar cpu_steal'),
+            extractCpuValue(reading, 'gnice', 'cpu_bar cpu_gnice'),
+            extractCpuValue(reading, 'soft', 'cpu_bar cpu_soft'),
+            extractCpuValue(reading, 'guest', 'cpu_bar cpu_guest'),
+            extractCpuValue(reading, 'idle', 'cpu_bar cpu_idle')
+          ])
+        }).concat(m("div", { class: 'legend' }, [
+          m('div', { class: 'legend_item' }, [
+            m('div', { class: 'marker cpu_usr' }), m('span', 'User')
+          ]),
+          m('div', { class: 'legend_item' }, [
+            m('div', { class: 'marker cpu_sys' }), m('span', 'System')
+          ]),
+          m('div', { class: 'legend_item' }, [
+            m('div', { class: 'marker cpu_iowait' }), m('span', 'IO Wait')
+          ]),
+          m('div', { class: 'legend_item' }, [
+            m('div', { class: 'marker cpu_nice' }), m('span', 'Nice')
+          ]),
+          m('div', { class: 'legend_item' }, [
+            m('div', { class: 'marker cpu_irq' }), m('span', 'IRQ')
+          ]),
+          m('div', { class: 'legend_item' }, [
+            m('div', { class: 'marker cpu_steal' }), m('span', 'Steal')
+          ]),
+          m('div', { class: 'legend_item' }, [
+            m('div', { class: 'marker cpu_gnice' }), m('span', 'Gnice')
+          ]),
+          m('div', { class: 'legend_item' }, [
+            m('div', { class: 'marker cpu_soft' }), m('span', 'Soft')
+          ]),
+          m('div', { class: 'legend_item' }, [
+            m('div', { class: 'marker cpu_guest' }), m('span', 'Guest')
+          ]),
+          m('div', { class: 'legend_item' }, [
+            m('div', { class: 'marker cpu_idle' }), m('span', 'Idle')
+          ])
+        ])))
+      }
+    }
+
+    function processRow(process) {
+      return m('tr', [
+        m('td', process.USER),
+        m('td', process.PID),
+        m('td', process.COMMAND),
+        m('td', process['%CPU']),
+        m('td', process['%MEM']),
+        m('td', process.VSZ),
+        m('td', process.RSS),
+        m('td', process.STAT),
+        m('td', process.START),
+        m('td', process.TIME),
+      ])
+    }
+
+    const Processes = {
+      view: function () {
+        return m('div', { class: 'cpu_users' },
+          m("table", { class: 'process_table' }, [
+            m("thead",
+              m("tr", [
+                m("th", 'User'),
+                m("th", 'Pid'),
+                m("th", 'Command'),
+                m("th", 'Cpu %'),
+                m("th", 'Mem %'),
+                m("th", 'Virtual'),
+                m("th", 'Resident'),
+                m("th", 'State'),
+                m("th", 'Start'),
+                m("th", 'Time')
+              ])),
+            m('tbody', MonitorData.cpu_users.map(processRow))
+          ]))
+      }
+    }
+
+    function scale(number, total) {
+      return Math.round(number / total * 100, 0)
+    }
+
+    function width(str) {
+      return { width: str + '%' }
+    }
+    const MemUsage = {
+      view: function () {
+        return m("div", { class: 'memory' }, MonitorData.mem_usage.map(function (reading, i) {
+          const used = parseInt(reading.used || 0)
+          const shared = parseInt(reading.shared || 0)
+          const cached = parseInt(reading['buff/cache'] || 0)
+          const total = parseInt(reading.total || 0)
+          const free = parseInt(reading.free || 0)
+
+          const usedDeg = scale(used, total)
+          const sharedDeg = scale(shared, total)
+          const cachedDeg = scale(cached, total)
+          const freeDeg = 100 - usedDeg - sharedDeg - cachedDeg
+
+          return m("div", { class: 'memory_reading' }, [
+            m("div", { class: 'mem_name' }, m("span", (i === 0 ? 'RAM' : 'SWAP') +
+              ' (' + (total - free) + 'Mb /' + total + 'Mb)')),
+            m("div", { class: 'mem_used', style: width(usedDeg) },
+              m("span", used)),
+            m("div", { class: 'mem_shared', style: width(sharedDeg) },
+              m("span", shared)),
+            m("div", { class: 'mem_cached', style: width(cachedDeg) },
+              m("span", cached)),
+            m("div", { class: 'mem_free', style: width(freeDeg) },
+              m("span", free))
+          ])
+        }).concat(m("div", { class: 'legend' }, [
+          m('div', { class: 'legend_item' }, [
+            m('div', { class: 'marker mem_used' }), m('span', 'Used')
+          ]),
+          m('div', { class: 'legend_item' }, [
+            m('div', { class: 'marker mem_shared' }), m('span', 'Shared')
+          ]),
+          m('div', { class: 'legend_item' }, [
+            m('div', { class: 'marker mem_cached' }), m('span', 'Cached')
+          ]),
+          m('div', { class: 'legend_item' }, [
+            m('div', { class: 'marker mem_free' }), m('span', 'Free')
+          ])]
+        )))
+      }
+    }
+
     const Main = {
       view: function () {
         return m("main", [
-          m("h1", { class: "title" }, "Process monitor: " + MonitorData.data.hostname),
-          m("div", JSON.stringify(MonitorData.data.cpu_usage)),
-          m("hr"),
-          m("div", JSON.stringify(MonitorData.data.mem_usage)),
-          m("hr"),
-          m("div", JSON.stringify(MonitorData.data.cpu_users))
+          m("h3", { class: "title" }, "Machine: " + MonitorData.hostname),
+          m(CpuUsage),
+          m(MemUsage),
+          m(Processes)
         ])
       }
     }
@@ -50,3 +210,5 @@
 
   </script>
 </body>
+
+</html>

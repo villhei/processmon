@@ -1,6 +1,6 @@
 #!/bin/bash
 
-free | jq -sR '[sub("\n$";"") 
+free -m | jq -sR '[sub("\n$";"") 
 | splits("\n") 
 | sub("^ +";"") 
 | [splits(" +")]] 

@@ -52,8 +52,13 @@ defmodule Processmon.Monitor do
   end
 
   defp update_state(cpu_usage, cpu_users, mem_usage, hostname) do
+
+    usage = Poison.decode!(cpu_usage) 
+      |> Enum.map(&CpuLoad.from_raw(&1))
+      |> Enum.sort(fn (a, b) -> a.cpu < b.cpu end)
+
     %Monitor{
-      cpu_usage: Poison.decode!(cpu_usage) |> Enum.map(&CpuLoad.from_raw(&1)),
+      cpu_usage: usage,
       cpu_users: Poison.decode!(cpu_users),
       mem_usage: Poison.decode!(mem_usage),
       hostname: hostname
