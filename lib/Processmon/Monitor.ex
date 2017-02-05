@@ -6,6 +6,7 @@ defmodule Processmon.Monitor do
   alias Porcelain.Result
   alias Processmon.SubscriptionManager
   alias __MODULE__, as: Monitor
+  alias __MODULE__.CpuLoad, as: CpuLoad
 
   @cpu_usage_command "scripts/cpu_usage.sh" #"mpstat -P ALL"
   @cpu_users_command "scripts/cpu_users.sh" # "ps -eo pcpu,pid,user,args | sort -k 1 -r | head -10"
@@ -43,23 +44,20 @@ defmodule Processmon.Monitor do
 
     _ref = schedule_next_update()
 
-    new_state = %Monitor{
-      cpu_usage: cpu_usage, 
-      cpu_users: cpu_users, 
-      mem_usage: memory, 
-      hostname: hostname}
+    state = update_state(cpu_usage, cpu_users, memory, hostname)
 
-    SubscriptionManager.update(encode(new_state))
-    {:noreply, new_state}
+    SubscriptionManager.update(state)
+
+    {:noreply, state}
   end
 
-  defp encode(new_state) do
-    (%Monitor{
-      cpu_usage: Poison.decode!(new_state.cpu_usage),
-      cpu_users: Poison.decode!(new_state.cpu_users),
-      mem_usage: Poison.decode!(new_state.mem_usage),
-      hostname: new_state.hostname
-    })
+  defp update_state(cpu_usage, cpu_users, mem_usage, hostname) do
+    %Monitor{
+      cpu_usage: Poison.decode!(cpu_usage) |> Enum.map(&CpuLoad.from_raw(&1)),
+      cpu_users: Poison.decode!(cpu_users),
+      mem_usage: Poison.decode!(mem_usage),
+      hostname: hostname
+    }
   end
 
   def handle_call(:get, _from, state) do
@@ -67,7 +65,7 @@ defmodule Processmon.Monitor do
   end
 
   defp schedule_next_update() do
-    Process.send_after(self(), :update, 1000)
+    Process.send_after(self(), :update, 500)
   end
 
 end

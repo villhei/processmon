@@ -1,6 +1,9 @@
 #!/bin/sh
 
-mpstat -P ALL | {
+count=$(nproc)
+take_lines=$(echo $count + 4 | bc)
+
+mpstat 1 1 -P ALL | head -$take_lines| {
   jq -sR '[sub("\n$";"") 
             | splits("\n") 
             | sub("^ +";"") 
@@ -10,6 +13,6 @@ mpstat -P ALL | {
               | .[3:]
               | [.[] 
                 | [. as $x 
-                  | range(1; $header | length - 1) 
+                  | range(1; $header | length ) 
                   | {"key": $header[.], "value": $x[.]}] | from_entries]'
 }

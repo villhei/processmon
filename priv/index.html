@@ -12,29 +12,11 @@
       },
       receive: function () {
         socket.onmessage = function (msg) {
-          const json = cleanup(JSON.parse(msg.data))
+          const json = JSON.parse(msg.data)
           MonitorData.data = json
           m.redraw()
         }
       },
-    }
-
-    function transformUsage(cpu) {
-      return {
-        id: cpu.CPU,
-        usr: cpu["%usr"],
-        sys: cpu["%sys"],
-        steal: cpu["%steal"],
-        soft: cpu["%soft"],
-        nice: cpu["%nice"],
-        iowait: cpu["%iowait"]
-      }
-    }
-
-    function cleanup(data) {
-      return Object.assign({}, data, {
-        cpu_usage: data.cpu_usage.map(transformUsage)
-      })
     }
 
     var Splash = {
