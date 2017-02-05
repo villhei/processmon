@@ -1,13 +1,70 @@
-<h1>Hello</h1>
+<body>
+  <script src="http://unpkg.com/mithril/mithril.js"></script>
+  <script>
 
-<script>
-var socket = new WebSocket('ws://localhost:8080/websocket')
+    var root = document.body
+    const socket = new WebSocket('ws://localhost:8080/websocket')
 
-socket.onerror = function(err) {
-  console.error(err)
-}
 
-socket.onmessage = function(msg) {
-  console.log('msg', JSON.parse(msg.data))
-}
-</script>
+    const MonitorData = {
+      data: {
+        hostname: 'connecting...'
+      },
+      receive: function () {
+        socket.onmessage = function (msg) {
+          const json = cleanup(JSON.parse(msg.data))
+          MonitorData.data = json
+          m.redraw()
+        }
+      },
+    }
+
+    function transformUsage(cpu) {
+      return {
+        id: cpu.CPU,
+        usr: cpu["%usr"],
+        sys: cpu["%sys"],
+        steal: cpu["%steal"],
+        soft: cpu["%soft"],
+        nice: cpu["%nice"],
+        iowait: cpu["%iowait"]
+      }
+    }
+
+    function cleanup(data) {
+      return Object.assign({}, data, {
+        cpu_usage: data.cpu_usage.map(transformUsage)
+      })
+    }
+
+    var Splash = {
+      view: function () {
+        return m("a", { href: "#!/hello" }, "Enter!")
+      }
+    }
+
+    const Main = {
+      view: function () {
+        return m("main", [
+          m("h1", { class: "title" }, "Process monitor: " + MonitorData.data.hostname),
+          m("div", JSON.stringify(MonitorData.data.cpu_usage)),
+          m("hr"),
+          m("div", JSON.stringify(MonitorData.data.mem_usage)),
+          m("hr"),
+          m("div", JSON.stringify(MonitorData.data.cpu_users))
+        ])
+      }
+    }
+
+    MonitorData.receive()
+
+    function run() {
+      m.route(root, "/monitor", {
+        "/monitor": Main
+      })
+    }
+
+    run()
+
+  </script>
+</body>

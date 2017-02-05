@@ -1,7 +1,7 @@
 defmodule Processmon.Monitor do
   use GenServer
 
-  defstruct cpu_usage: [], cpu_users: [], mem_usage: []
+  defstruct cpu_usage: [], cpu_users: [], mem_usage: [], hostname: "localhost"
 
   alias Porcelain.Result
   alias Processmon.SubscriptionManager
@@ -10,7 +10,7 @@ defmodule Processmon.Monitor do
   @cpu_usage_command "scripts/cpu_usage.sh" #"mpstat -P ALL"
   @cpu_users_command "scripts/cpu_users.sh" # "ps -eo pcpu,pid,user,args | sort -k 1 -r | head -10"
   @memory_usage_command "scripts/mem.sh" #"free"
-
+  @hostname_command "hostname"
   ### Client API
 
   @doc """
@@ -39,8 +39,16 @@ defmodule Processmon.Monitor do
     %Result{out: memory, status: 0} = Porcelain.shell(@memory_usage_command)
     %Result{out: cpu_usage, status: 0} = Porcelain.shell(@cpu_usage_command)
     %Result{out: cpu_users, status: 0} = Porcelain.shell(@cpu_users_command)
+    %Result{out: hostname, status: 0} = Porcelain.shell(@hostname_command)
+
     _ref = schedule_next_update()
-    new_state = %Monitor{cpu_usage: cpu_usage, cpu_users: cpu_users, mem_usage: memory}
+
+    new_state = %Monitor{
+      cpu_usage: cpu_usage, 
+      cpu_users: cpu_users, 
+      mem_usage: memory, 
+      hostname: hostname}
+
     SubscriptionManager.update(encode(new_state))
     {:noreply, new_state}
   end
@@ -49,7 +57,8 @@ defmodule Processmon.Monitor do
     (%Monitor{
       cpu_usage: Poison.decode!(new_state.cpu_usage),
       cpu_users: Poison.decode!(new_state.cpu_users),
-      mem_usage: Poison.decode!(new_state.mem_usage)
+      mem_usage: Poison.decode!(new_state.mem_usage),
+      hostname: new_state.hostname
     })
   end
 
