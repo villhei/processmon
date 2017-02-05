@@ -14,18 +14,24 @@ main {
   justify-content: center;
 }
 
-main > h3 {
-  text-align: center;
-  flex-basis: 90%;
-  width: 90%;
-}
-
 main > div {
     flex-basis: 90%;
     overflow: hidden;
 }
 
-.cpu_usage, .cpu_users, .memory, main > h3 {
+.header {
+  text-align: center;
+}
+
+.header .box {
+  border: 1px solid black;
+  width: 20px;
+  height: 20px;
+  margin: 20px -40px -40px 20px;
+  background-color: #6D9CBE;
+}
+
+.cpu_usage, .cpu_users, .memory, .header {
   border: 1px solid black;
   background-color: #2B2B2B;
   margin: 2pt 0;
@@ -37,7 +43,7 @@ main > div {
   margin: 5px 10px;
 }
 
-.cpu_bar_base {
+.cpu_bar_base, mem_bar_base {
   width: 100%;
 }
 
@@ -86,7 +92,7 @@ main > div {
   background-color: #5A647E;
 } 
 
-.cpu_idle, .mem_free, .cpu_bar_base {
+.cpu_idle, .mem_free, .cpu_bar_base, .mem_bar_base {
   background-color: rgba(255, 255, 255, 0.4);
 }
 
@@ -131,7 +137,7 @@ main > div {
   text-align: left;
   background-color: #454545;
   border: 1px solid black;
-  border-bottom: 2px solid black;
+  border-bottom: 1px solid black;
 }
 
 .process_table th, .process_table td  {

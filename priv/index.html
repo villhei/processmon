@@ -17,6 +17,7 @@
       cpu_usage: [],
       cpu_users: [],
       mem_usage: [],
+      uptime: [],
       hostname: 'connecting...',
       receive: function () {
         socket.onmessage = function (msg) {
@@ -24,6 +25,7 @@
           MonitorData.cpu_usage = json.cpu_usage
           MonitorData.mem_usage = json.mem_usage
           MonitorData.hostname = json.hostname
+          MonitorData.uptime = json.uptime
           const users = [].concat(json.cpu_users)
           users.sort(function (a, b) {
             return parseFloat(a["%CPU"]) - parseFloat(b["%CPU"])
@@ -67,37 +69,37 @@
             ])
           ])
         }).concat(m("div", { class: 'legend' }, [
-      m('div', { class: 'legend_item' }, [
-        m('div', { class: 'marker cpu_usr' }), m('span', 'User')
-      ]),
-      m('div', { class: 'legend_item' }, [
-        m('div', { class: 'marker cpu_sys' }), m('span', 'System')
-      ]),
-      m('div', { class: 'legend_item' }, [
-        m('div', { class: 'marker cpu_iowait' }), m('span', 'IO Wait')
-      ]),
-      m('div', { class: 'legend_item' }, [
-        m('div', { class: 'marker cpu_nice' }), m('span', 'Nice')
-      ]),
-      m('div', { class: 'legend_item' }, [
-        m('div', { class: 'marker cpu_irq' }), m('span', 'IRQ')
-      ]),
-      m('div', { class: 'legend_item' }, [
-        m('div', { class: 'marker cpu_steal' }), m('span', 'Steal')
-      ]),
-      m('div', { class: 'legend_item' }, [
-        m('div', { class: 'marker cpu_gnice' }), m('span', 'Gnice')
-      ]),
-      m('div', { class: 'legend_item' }, [
-        m('div', { class: 'marker cpu_soft' }), m('span', 'Soft')
-      ]),
-      m('div', { class: 'legend_item' }, [
-        m('div', { class: 'marker cpu_guest' }), m('span', 'Guest')
-      ]),
-      m('div', { class: 'legend_item' }, [
-        m('div', { class: 'marker cpu_idle' }), m('span', 'Idle')
-      ])
-    ])))
+          m('div', { class: 'legend_item' }, [
+            m('div', { class: 'marker cpu_usr' }), m('span', 'User')
+          ]),
+          m('div', { class: 'legend_item' }, [
+            m('div', { class: 'marker cpu_sys' }), m('span', 'System')
+          ]),
+          m('div', { class: 'legend_item' }, [
+            m('div', { class: 'marker cpu_iowait' }), m('span', 'IO Wait')
+          ]),
+          m('div', { class: 'legend_item' }, [
+            m('div', { class: 'marker cpu_nice' }), m('span', 'Nice')
+          ]),
+          m('div', { class: 'legend_item' }, [
+            m('div', { class: 'marker cpu_irq' }), m('span', 'IRQ')
+          ]),
+          m('div', { class: 'legend_item' }, [
+            m('div', { class: 'marker cpu_steal' }), m('span', 'Steal')
+          ]),
+          m('div', { class: 'legend_item' }, [
+            m('div', { class: 'marker cpu_gnice' }), m('span', 'Gnice')
+          ]),
+          m('div', { class: 'legend_item' }, [
+            m('div', { class: 'marker cpu_soft' }), m('span', 'Soft')
+          ]),
+          m('div', { class: 'legend_item' }, [
+            m('div', { class: 'marker cpu_guest' }), m('span', 'Guest')
+          ]),
+          m('div', { class: 'legend_item' }, [
+            m('div', { class: 'marker cpu_idle' }), m('span', 'Idle')
+          ])
+        ])))
       }
     }
 
@@ -162,14 +164,14 @@
           return m("div", { class: 'memory_reading' }, [
             m("div", { class: 'mem_name' }, m("span", (i === 0 ? 'RAM' : 'SWAP') +
               ' (' + (total - free) + 'Mb /' + total + 'Mb)')),
-            m("div", { class: 'mem_used', style: width(usedDeg) },
-              m("span", used)),
-            m("div", { class: 'mem_shared', style: width(sharedDeg) },
-              m("span", shared)),
-            m("div", { class: 'mem_cached', style: width(cachedDeg) },
-              m("span", cached)),
-            m("div", { class: 'mem_free', style: width(freeDeg) },
-              m("span", free))
+            m('div', { class: 'mem_bar_base' }, [
+              m("div", { class: 'mem_bar mem_used', style: width(usedDeg) },
+                m("span", used)),
+              m("div", { class: 'mem_bar mem_shared', style: width(sharedDeg) },
+                m("span", shared)),
+              m("div", { class: 'mem_bar mem_cached', style: width(cachedDeg) },
+                m("span", cached))
+            ])
           ])
         }).concat(m("div", { class: 'legend' }, [
           m('div', { class: 'legend_item' }, [
@@ -191,7 +193,11 @@
     const Main = {
       view: function () {
         return m("main", [
-          m("h3", { class: "title" }, "Machine: " + MonitorData.hostname),
+          m('div', { class: 'header' }, [
+            m('div', { class: 'box' }),
+            m("h3", { class: "title" }, "Machine: " + MonitorData.hostname),
+            m("h4", { class: "uptime" }, MonitorData.uptime)
+          ]),
           m(CpuUsage),
           m(MemUsage),
           m(Processes)
