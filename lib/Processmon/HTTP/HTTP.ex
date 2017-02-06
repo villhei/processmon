@@ -23,7 +23,7 @@ defmodule Processmon.HTTP do
         {"/websocket", WebsocketHandler, []}
       ]}
     ])
-    {:ok, res} = :cowboy.start_http(:http_listener, 100, [ip: {0,0,0,0}, port: 8080], [env: [dispatch: dispatch]])
+    {:ok, res} = :cowboy.start_http(:http_listener, 100, [{ip, {127,0,0,1}}, port: 8080], [env: [dispatch: dispatch]])
   end
 
    ### Callbacks
