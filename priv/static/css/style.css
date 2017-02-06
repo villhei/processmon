@@ -29,6 +29,7 @@ main > div {
   height: 20px;
   margin: 20px -40px -40px 20px;
   background-color: #6D9CBE;
+  border-radius: 5px 5px;
 }
 
 .cpu_usage, .cpu_users, .memory, .header {

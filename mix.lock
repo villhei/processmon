@@ -1,7 +1,15 @@
-%{"cowboy": {:git, "https://github.com/extend/cowboy.git", "dbb636034f20736e16eb9d6c809217c9525b6cbd", [tag: "2.0.0-pre.3"]},
+%{"bbmustache": {:hex, :bbmustache, "1.0.4", "7ba94f971c5afd7b6617918a4bb74705e36cab36eb84b19b6a1b7ee06427aa38", [:rebar], []},
+  "cf": {:hex, :cf, "0.2.2", "7f2913fff90abcabd0f489896cfeb0b0674f6c8df6c10b17a83175448029896c", [:rebar3], []},
+  "conform": {:hex, :conform, "0.11.0", "fe5a68ab8533b53b4a463aa2ee71c622bea19b86e0183b8d34c23c6b8ed17dc7", [:mix], []},
+  "cowboy": {:git, "https://github.com/extend/cowboy.git", "dbb636034f20736e16eb9d6c809217c9525b6cbd", [tag: "2.0.0-pre.3"]},
   "cowlib": {:git, "https://github.com/ninenines/cowlib", "0e7abe0b24593f131add272c275406d8ed231805", [ref: "master"]},
+  "erlware_commons": {:hex, :erlware_commons, "0.22.0", "051bed79a34e66678c1cbeebc7b66360c827d081a0c5e2528878011e31ddcdca", [:rebar3], [{:cf, "0.2.2", [hex: :cf, optional: false]}]},
+  "exrm": {:hex, :exrm, "1.0.8", "5aa8990cdfe300282828b02cefdc339e235f7916388ce99f9a1f926a9271a45d", [:mix], [{:relx, "~> 3.5", [hex: :relx, optional: false]}]},
+  "getopt": {:hex, :getopt, "0.8.2", "b17556db683000ba50370b16c0619df1337e7af7ecbf7d64fbf8d1d6bce3109b", [:rebar], []},
   "jsex": {:hex, :jsex, "2.0.0", "d54a39e49418b34b1a78236a92f73e4d7c46329c220275d7223fab4b3dc6120f", [:mix], [{:jsx, "~> 2.0", [hex: :jsx, optional: false]}]},
   "jsx": {:hex, :jsx, "2.8.1", "1453b4eb3615acb3e2cd0a105d27e6761e2ed2e501ac0b390f5bbec497669846", [:mix, :rebar3], []},
   "poison": {:hex, :poison, "3.1.0", "d9eb636610e096f86f25d9a46f35a9facac35609a7591b3be3326e99a0484665", [:mix], []},
   "porcelain": {:hex, :porcelain, "2.0.3", "2d77b17d1f21fed875b8c5ecba72a01533db2013bd2e5e62c6d286c029150fdc", [:mix], []},
-  "ranch": {:git, "https://github.com/ninenines/ranch", "741bfb73ca663394ecf7a73410506d66f01985a6", [ref: "1.1.0"]}}
+  "providers": {:hex, :providers, "1.6.0", "db0e2f9043ae60c0155205fcd238d68516331d0e5146155e33d1e79dc452964a", [:rebar3], [{:getopt, "0.8.2", [hex: :getopt, optional: false]}]},
+  "ranch": {:git, "https://github.com/ninenines/ranch", "741bfb73ca663394ecf7a73410506d66f01985a6", [ref: "1.1.0"]},
+  "relx": {:hex, :relx, "3.22.2", "aee2ef6e9ac6d21d6661133b7a0be6e81424de9cdca0012fc008bc677297c469", [:rebar3], [{:bbmustache, "1.0.4", [hex: :bbmustache, optional: false]}, {:cf, "0.2.2", [hex: :cf, optional: false]}, {:erlware_commons, "0.22.0", [hex: :erlware_commons, optional: false]}, {:getopt, "0.8.2", [hex: :getopt, optional: false]}, {:providers, "1.6.0", [hex: :providers, optional: false]}]}}

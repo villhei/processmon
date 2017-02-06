@@ -14,7 +14,7 @@ defmodule Processmon.Mixfile do
   #
   # Type "mix help compile.app" for more information
   def application do
-    [applications: [:logger, :porcelain, :cowboy],
+    [applications: [:logger, :porcelain, :cowboy, :poison],
     mod: {Processmon, []}]
   end
 
@@ -30,6 +30,7 @@ defmodule Processmon.Mixfile do
   defp deps do
     [ {:porcelain, "~> 2.0"},
       {:cowboy, github: "extend/cowboy", tag: "2.0.0-pre.3"},
-      {:poison, "~> 3.0"}]
+      {:poison, "~> 3.0"},
+      {:exrm, "~> 1.0.8"} ]
   end
 end
