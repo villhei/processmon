@@ -18,8 +18,8 @@ defmodule Processmon.HTTP do
   def start_server do
     dispatch = :cowboy_router.compile([
       {:_, [
-        {"/", :cowboy_static, {:priv_file, :processmon, "index.html"}},
-        {"/static/[...]", :cowboy_static, {:priv_dir,  :processmon, "static"}},
+        {"/", :cowboy_static, {:priv_file, :processmon, "www/index.html"}},
+        {"/static/[...]", :cowboy_static, {:priv_dir,  :processmon, "www/static"}},
         {"/websocket", WebsocketHandler, []}
       ]}
     ])
