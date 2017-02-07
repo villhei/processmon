@@ -18,3 +18,19 @@ If [available in Hex](https://hex.pm/docs/publish), the package can be installed
           [applications: [:processmon_ex]]
         end
 
+
+## Building
+
+```
+ mix deps.get
+ MIX_ENV=prod mix compile
+ MIX_ENV=prod mix release
+
+```
+
+## Running the build
+```
+      Interactive: _build/dev/rel/myapp/bin/test console
+      Foreground: _build/dev/rel/myapp/bin/test foreground
+      Daemon: _build/dev/rel/myapp/bin/test start
+```

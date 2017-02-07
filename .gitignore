@@ -1,7 +1,8 @@
 /_build
 /cover
 /deps
-/rel
+/rel/processmon
+/rel/plugins
 erl_crash.dump
 *.ez
 *.swp
