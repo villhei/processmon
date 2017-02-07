@@ -3,6 +3,7 @@
   "conform": {:hex, :conform, "0.11.0", "fe5a68ab8533b53b4a463aa2ee71c622bea19b86e0183b8d34c23c6b8ed17dc7", [:mix], []},
   "cowboy": {:git, "https://github.com/extend/cowboy.git", "dbb636034f20736e16eb9d6c809217c9525b6cbd", [tag: "2.0.0-pre.3"]},
   "cowlib": {:git, "https://github.com/ninenines/cowlib", "0e7abe0b24593f131add272c275406d8ed231805", [ref: "master"]},
+  "distillery": {:hex, :distillery, "1.1.0", "e9943bd29557e9c252a051d8ac4b47e597cd9bf2a74332b8628eab4954eb51d7", [:mix], []},
   "erlware_commons": {:hex, :erlware_commons, "0.22.0", "051bed79a34e66678c1cbeebc7b66360c827d081a0c5e2528878011e31ddcdca", [:rebar3], [{:cf, "0.2.2", [hex: :cf, optional: false]}]},
   "exrm": {:hex, :exrm, "1.0.8", "5aa8990cdfe300282828b02cefdc339e235f7916388ce99f9a1f926a9271a45d", [:mix], [{:relx, "~> 3.5", [hex: :relx, optional: false]}]},
   "getopt": {:hex, :getopt, "0.8.2", "b17556db683000ba50370b16c0619df1337e7af7ecbf7d64fbf8d1d6bce3109b", [:rebar], []},

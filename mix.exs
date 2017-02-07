@@ -31,6 +31,6 @@ defmodule Processmon.Mixfile do
     [ {:porcelain, "~> 2.0"},
       {:cowboy, github: "extend/cowboy", tag: "2.0.0-pre.3"},
       {:poison, "~> 3.0"},
-      {:exrm, "~> 1.0.8"} ]
+      {:distillery, "~> 1.0"} ]
   end
 end
