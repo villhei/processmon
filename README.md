@@ -30,7 +30,7 @@ If [available in Hex](https://hex.pm/docs/publish), the package can be installed
 
 ## Running the build
 ```
-      Interactive: _build/dev/rel/myapp/bin/test console
-      Foreground: _build/dev/rel/myapp/bin/test foreground
-      Daemon: _build/dev/rel/myapp/bin/test start
+      Interactive: _build/prod/rel/processmon/bin/processmon console
+      Foreground: _build/prod/rel/processmon/bin/processmon foreground
+      Daemon: _build/prod/rel/processmon/bin/processmon start
 ```
