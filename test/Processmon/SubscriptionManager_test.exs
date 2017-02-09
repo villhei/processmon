@@ -61,4 +61,19 @@ defmodule Processmon.SubscriptionManager.Test do
     assert([{:update, :foo}, {:update, :foo}] = result)
   end
 
+  test "Should ignore the unsubscribed subscriber" do
+    {:ok, _} = SubscriptionManager.start_link()
+
+    first = spawn_proxy(self())
+    second = spawn_proxy(self())
+
+    SubscriptionManager.subscribe(first)
+    SubscriptionManager.subscribe(second)
+    SubscriptionManager.unsubscribe(first)
+    SubscriptionManager.update(:foo)
+    result = [handle_receive(), handle_receive()]
+
+    assert([{:update, :foo}, :timeout] = result)
+  end
+
 end
