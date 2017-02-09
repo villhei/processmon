@@ -7,7 +7,14 @@ defmodule Processmon.Mixfile do
      elixir: "~> 1.2",
      build_embedded: Mix.env == :prod,
      start_permanent: Mix.env == :prod,
+     aliases: aliases(),
      deps: deps()]
+  end
+
+  defp aliases do
+  [
+    test: "test --no-start" #(2)
+  ]
   end
 
   # Configuration for the OTP application
