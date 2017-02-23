@@ -16,6 +16,10 @@ defmodule Processmon.ReportCollector do
     Broadcast the report
   """
 
+  def report(target, reporter, payload) do
+    GenServer.cast(target, {:report, {reporter, payload}})
+  end
+
   def report(reporter, payload) do
     GenServer.cast(__MODULE__, {:report, {reporter, payload}})
   end
@@ -32,18 +36,50 @@ defmodule Processmon.ReportCollector do
   end
 
   def handle_info(:broadcast, state) do
-    IO.puts("Broadcasting")
-    :ok = SubscriptionManager.update(state)
+    new_state = remove_old(state)
+    :ok = SubscriptionManager.update(remove_timestamps(new_state))
     _ref = schedule_next_update()
     {:noreply, state}
   end
 
-  def handle_info({:update, {reporter, payload}}, state) do
-    {:noreply, state |> Map.put(reporter, payload) }
+  defp remove_timestamps(state) do
+    state 
+    |> Map.keys() 
+    |> Enum.map(fn key -> 
+      values = Map.get(state, key)
+      payload = Map.get(values, :payload)
+      {key, payload}
+    end)
+    |>
+    Enum.reduce(%{}, fn({key, payload}, acc) -> 
+      Map.put(acc, key, payload) 
+    end)
+
+  end
+
+  defp remove_old(state) do
+    time = :os.system_time(:milli_seconds)
+    timeout = 1000 * 5
+
+    remove_older = time - timeout
+    state 
+      |> Map.keys() 
+      |> Enum.filter(fn host -> 
+        values = Map.get(state, host)
+        values[:time] > remove_older 
+      end) 
+      |> Enum.reduce(%{}, fn(key, acc) -> 
+        Map.put(acc, key, Map.get(state, key))
+      end)
   end
   
   def handle_cast({:report, {reporter, payload}}, state) do
-    {:noreply, state |> Map.put(reporter, payload) }
+    time = :os.system_time(:milli_seconds)
+
+    new_state = state 
+      |> Map.put(reporter, %{:time => time, :payload => payload } )
+
+    {:noreply, new_state}
   end
 
   def handle_cast({:update, payload}, state) do

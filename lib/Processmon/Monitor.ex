@@ -13,7 +13,7 @@ defmodule Processmon.Monitor do
   @memory_usage_command "/scripts/mem.sh" #"free"
   @hostname_command "hostname"
   @uptime_command "uptime"
-  
+
   ### Client API
 
   @doc """
@@ -25,11 +25,19 @@ defmodule Processmon.Monitor do
   end
 
   @doc """
-  Fetches the monitor output of given server
+  Add a broadcast target
   """
 
-  def get_stream(server) do
-    GenServer.call(server, :get_stream)
+  def add_target(target) do
+    GenServer.cast(__MODULE__, {:add_target, target})
+  end
+
+  @doc """
+  Remove a broadcast target
+  """
+
+  def remove_target(target) do
+    GenServer.cast(__MODULE__, {:remove_target, target})
   end
 
   @doc """
@@ -39,7 +47,8 @@ defmodule Processmon.Monitor do
   def init(:ok) do
     IO.puts("Starting the system monitor process")
     _ref = schedule_next_update()
-    {:ok, %Monitor{}}
+    report_targets = [{ReportCollector, Node.self()}]
+    {:ok, report_targets}
   end
 
   defp get_path(path) do
@@ -50,7 +59,7 @@ defmodule Processmon.Monitor do
   The timer loop
   """
     
-  def handle_info(:update, _state) do
+  def handle_info(:update, report_targets) do
     %Result{out: memory, status: 0} = Porcelain.shell(get_path(@memory_usage_command))
     %Result{out: cpu_usage, status: 0} = Porcelain.shell(get_path(@cpu_usage_command))
     %Result{out: cpu_users, status: 0} = Porcelain.shell(get_path(@cpu_users_command))
@@ -59,14 +68,17 @@ defmodule Processmon.Monitor do
 
     _ref = schedule_next_update()
 
-    state = update_state(cpu_usage, cpu_users, memory, hostname, uptime)
+    monitor_results = update_results(cpu_usage, cpu_users, memory, hostname, uptime)
 
-    ReportCollector.report(hostname, state)
+    report_targets 
+      |> Enum.each(fn target -> 
+        ReportCollector.report(target, Node.self(), monitor_results) 
+      end)
 
-    {:noreply, state}
+    {:noreply, report_targets}
   end
 
-  defp update_state(cpu_usage, cpu_users, mem_usage, hostname, uptime) do
+  defp update_results(cpu_usage, cpu_users, mem_usage, hostname, uptime) do
 
     usage = Poison.decode!(cpu_usage) 
       |> Enum.map(&CpuLoad.from_raw(&1))
@@ -91,6 +103,17 @@ defmodule Processmon.Monitor do
 
   def handle_call(_, _from, state) do
     {:reply, {:error, "Unrecognized instruction" }, state}
+  end
+
+  def handle_cast({:add_target, target}, state) do
+    {:noreply, [target | state]}
+  end
+
+  def handle_cast({:remove_target, remove_target}, state) do
+    targets = state |> Enum.filter(fn target -> 
+      target != remove_target 
+    end) 
+    {:noreply, targets }
   end
 
   defp schedule_next_update() do
