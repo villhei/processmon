@@ -4,7 +4,7 @@ defmodule Processmon.Monitor do
   defstruct cpu_usage: [], cpu_users: [], mem_usage: [], uptime: "", hostname: "localhost"
 
   alias Porcelain.Result
-  alias Processmon.SubscriptionManager
+  alias Processmon.ReportCollector
   alias __MODULE__, as: Monitor
   alias __MODULE__.CpuLoad, as: CpuLoad
 
@@ -13,6 +13,7 @@ defmodule Processmon.Monitor do
   @memory_usage_command "/scripts/mem.sh" #"free"
   @hostname_command "hostname"
   @uptime_command "uptime"
+  
   ### Client API
 
   @doc """
@@ -41,8 +42,6 @@ defmodule Processmon.Monitor do
     {:ok, %Monitor{}}
   end
 
-
-
   defp get_path(path) do
      Application.app_dir(:processmon, "priv") <> path 
   end
@@ -62,7 +61,7 @@ defmodule Processmon.Monitor do
 
     state = update_state(cpu_usage, cpu_users, memory, hostname, uptime)
 
-    SubscriptionManager.update(state)
+    ReportCollector.report(hostname, state)
 
     {:noreply, state}
   end

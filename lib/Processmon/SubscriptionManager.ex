@@ -43,6 +43,7 @@ defmodule Processmon.SubscriptionManager do
   end
 
   def handle_cast({:subscribe, subscriber}, state) do
+    IO.puts("Received a new subscriber#{inspect(subscriber)}")
     {:noreply, Map.put(state, subscriber, nil)}
   end
 

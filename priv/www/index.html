@@ -9,29 +9,23 @@
 <body>
   <script src="http://unpkg.com/mithril/mithril.js"></script>
   <script>
-
     var root = document.body
     const socket = new WebSocket('ws://' + location.hostname + ':' + location.port + '/websocket')
-
     const MonitorData = {
-      cpu_usage: [],
-      cpu_users: [],
-      mem_usage: [],
-      uptime: [],
-      hostname: 'connecting...',
+      machines: [],
       receive: function () {
         socket.onmessage = function (msg) {
+          console.log('msg', msg)
           const json = JSON.parse(msg.data)
-          MonitorData.cpu_usage = json.cpu_usage
-          MonitorData.mem_usage = json.mem_usage
-          MonitorData.hostname = json.hostname
-          MonitorData.uptime = json.uptime
-          const users = [].concat(json.cpu_users)
-          users.sort(function (a, b) {
-            return parseFloat(a["%CPU"]) - parseFloat(b["%CPU"])
+          const machines = Object.keys(json).map((machine) => {
+            const machineData = json[machine]
+            machineData.cpu_users.sort(function (a, b) {
+              return parseFloat(a["%CPU"]) - parseFloat(b["%CPU"])
+            })
+            machineData.cpu_users.reverse()
+            return json[machine]
           })
-          users.reverse()
-          MonitorData.cpu_users = users
+          MonitorData.machines = machines
           m.redraw()
         }
       },
@@ -50,8 +44,9 @@
     }
 
     const CpuUsage = {
-      view: function () {
-        return m("div", { class: 'cpu_usage' }, MonitorData.cpu_usage.map(function (reading) {
+      view: function (vnode) {
+        const usage = vnode.attrs.data
+        return m("div", { class: 'cpu_usage' }, usage.map(function (reading) {
           const loadString = 100 - parseInt(reading.idle) + '%'
 
           return m("div", { class: 'cpu_reading' }, [
@@ -119,7 +114,8 @@
     }
 
     const Processes = {
-      view: function () {
+      view: function (vnode) {
+        const cpu_users = vnode.attrs.data
         return m('div', { class: 'cpu_users' },
           m("table", { class: 'process_table' }, [
             m("thead",
@@ -135,7 +131,7 @@
                 m("th", 'Start'),
                 m("th", 'Time')
               ])),
-            m('tbody', MonitorData.cpu_users.map(processRow))
+            m('tbody', cpu_users.map(processRow))
           ]))
       }
     }
@@ -148,8 +144,9 @@
       return { width: str + '%' }
     }
     const MemUsage = {
-      view: function () {
-        return m("div", { class: 'memory' }, MonitorData.mem_usage.map(function (reading, i) {
+      view: function (vnode) {
+        const memUsage = vnode.attrs.data
+        return m("div", { class: 'memory' }, memUsage.map(function (reading, i) {
           const used = parseInt(reading.used || 0)
           const shared = parseInt(reading.shared || 0)
           const cached = parseInt(reading['buff/cache'] || 0)
@@ -190,18 +187,28 @@
       }
     }
 
-    const Main = {
-      view: function () {
-        return m("main", [
+    const Machine = {
+      view: function (vnode) {
+        var data = vnode.attrs.data
+        return m('div', { class: 'machine' }, [
           m('div', { class: 'header' }, [
             m('div', { class: 'box' }),
-            m("h3", { class: "title" }, "Machine: " + MonitorData.hostname),
-            m("h4", { class: "uptime" }, MonitorData.uptime)
+            m("h3", { class: "title" }, "Machine: " + data.hostname),
+            m("h4", { class: "uptime" }, data.uptime)
           ]),
-          m(CpuUsage),
-          m(MemUsage),
-          m(Processes)
+          m(CpuUsage, { data: data.cpu_usage }),
+          m(MemUsage, { data: data.mem_usage }),
+          m(Processes, { data: data.cpu_users })
         ])
+      }
+    }
+
+    const Main = {
+      view: function () {
+        return m("main", MonitorData.machines.map(function (machineData) {
+          return m(Machine, { data: machineData })
+        })
+        )
       }
     }
 
@@ -214,7 +221,6 @@
     }
 
     run()
-
   </script>
 </body>
 

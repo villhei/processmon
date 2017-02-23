@@ -38,10 +38,14 @@ main > div {
   margin: 2pt 0;
 }
 
-.cpu_reading, .memory_reading, .cpu_users {
+.cpu_reading, .memory_reading {
   width: calc(50% - 20px);
   display: inline-block;
   margin: 5px 10px;
+}
+
+.cpu_users {
+  display: inline-block;
 }
 
 .cpu_bar_base, mem_bar_base {
@@ -129,7 +133,7 @@ main > div {
 
 .process_table {
   display: inline-block;
-  width: 100%;
+  width: calc(100% - 20px);
   margin: 5px 10px;
   border-collapse: collapse;
 }
