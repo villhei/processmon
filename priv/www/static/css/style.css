@@ -10,13 +10,18 @@ body * {
 
 main {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap2;
   justify-content: center;
 }
 
 main > div {
     flex-basis: 90%;
     overflow: hidden;
+}
+
+.machine {
+  flex: 1 1 auto;
+  margin: 0 2.5%;
 }
 
 .header {
@@ -46,6 +51,7 @@ main > div {
 
 .cpu_users {
   display: inline-block;
+  width: 100%;
 }
 
 .cpu_bar_base, mem_bar_base {
@@ -132,7 +138,6 @@ main > div {
 }
 
 .process_table {
-  display: inline-block;
   width: calc(100% - 20px);
   margin: 5px 10px;
   border-collapse: collapse;

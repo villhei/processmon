@@ -10,12 +10,11 @@
   <script src="http://unpkg.com/mithril/mithril.js"></script>
   <script>
     var root = document.body
-    const socket = new WebSocket('ws://' + location.hostname + ':' + location.port + '/websocket')
     const MonitorData = {
       machines: [],
       receive: function () {
+        const socket = new WebSocket('ws://' + location.hostname + ':' + location.port + '/websocket')
         socket.onmessage = function (msg) {
-          console.log('msg', msg)
           const json = JSON.parse(msg.data)
           const machines = Object.keys(json).map((machine) => {
             const machineData = json[machine]
